@@ -17,9 +17,15 @@
       url = "github:JaKooLit/Hyprland-Dots/main";
       flake = false;
     };
+    
+    # ML4W Hyprland
+    ml4w-dots = {
+      url = "github:mylinuxforwork/dotfiles/main";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, hyprland, ml4w-dots, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};

@@ -4,11 +4,17 @@
   lib,
   ...
 }: {
+  # Add option for ML4W Hyprland
+  options.wm.ml4w = {
+    enable = lib.mkEnableOption "Enable ML4W Hyprland configuration";
+  };
+
   imports = [
     ./niri
     ./hyprland
     ./awesome
-  ];
+    ./hyprland-ml4w
+  ] ++ lib.optional config.wm.ml4w.enable ./hyprland-ml4w;
 
   config = {
     # Common window manager dependencies and configurations
@@ -28,14 +34,6 @@
       networkmanagerapplet
       pasystray
       
-      # Clipboard management
-      wl-clipboard
-      xclip
-      
-      # Screenshot and screen recording
-      grim
-      slurp
-      
       # System monitoring
       btop
       htop
@@ -46,18 +44,9 @@
       # Theme and appearance
       qt5ct
       qt6ct
-      gtk3
-      gtk4
-      
-      # Audio control
-      pamixer
-      playerctl
-      pavucontrol
       
       # Common applications
       alacritty
-      rofi
-      dunst
     ];
 
     # Common XDG portal configuration
@@ -72,7 +61,6 @@
     # Common environment variables
     home.sessionVariables = {
       # XDG specifications
-      XDG_CURRENT_DESKTOP = "Hyprland";
       XDG_SESSION_TYPE = "wayland";
       
       # Qt/GTK settings
@@ -91,6 +79,8 @@
       # Default applications
       TERMINAL = "alacritty";
       EDITOR = "nvim";
+    } // lib.optionalAttrs config.wm.ml4w.enable {
+      XDG_CURRENT_DESKTOP = "Hyprland";
     };
   };
 }

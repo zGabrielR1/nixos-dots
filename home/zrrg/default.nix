@@ -1,11 +1,16 @@
 # This is your home-manager configuration file
-{ config, pkgs, ... }:
+{ config, pkgs, lib, inputs ? {}, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "zrrg";
   home.homeDirectory = "/home/zrrg";
+
+  # Import window manager configurations
+  imports = [ 
+    ./wm
+  ];
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -17,6 +22,9 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  # Enable ML4W Hyprland configuration (disabled by default)
+  wm.ml4w.enable = false;
 
   # Basic packages that should be installed
   home.packages = with pkgs; [
@@ -42,6 +50,4 @@
       userEmail = ""; # Add your email here
     };
   };
-
-  # Additional configurations can be added here
 }
