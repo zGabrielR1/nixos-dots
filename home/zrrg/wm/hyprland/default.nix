@@ -3,7 +3,7 @@
 
 let
   # Profile selection (change this to switch profiles)
-  selectedProfile = "jakoolit"; # Options: jakoolit, dotfiles, personal
+  selectedProfile = "jakoolit"; # Options: jakoolit, dotfiles, personal, ml4w
 
   jakoolit-dots = pkgs.fetchFromGitHub {
     owner = "JaKooLit";
@@ -59,38 +59,42 @@ let
     personal = {
       imports = [ ./profiles/personal ];
     };
+    ml4w = {
+      imports = [ ./ml4w.nix ];
+    };
   };
 
-  selectedConfig = profileConfigs.${selectedProfile};
-in
-{
-  imports = selectedConfig.imports or [];
+in {
+  imports = (profileConfigs.${selectedProfile}.imports or []) ++ (if selectedProfile == "jakoolit" then [] else []);
 
-  home.packages = commonPackages;
+  config = lib.mkMerge [
+    {
+      # Common configuration for all profiles
+      home.packages = commonPackages;
 
-  wayland.windowManager.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-    systemd.enable = true;
-  };
+      wayland.windowManager.hyprland = {
+        enable = true;
+        xwayland.enable = true;
+        systemd.enable = true;
+      };
 
-  # Add necessary environment variables
-  home.sessionVariables = {
-    CLUTTER_BACKEND = "wayland";
-    GDK_BACKEND = "wayland,x11";
-    QT_AUTO_SCREEN_SCALE_FACTOR = "1";
-    QT_QPA_PLATFORM = "wayland;xcb";
-    QT_QPA_PLATFORMTHEME = "qt6ct";
-    QT_SCALE_FACTOR = "1";
-    QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-    XDG_CURRENT_DESKTOP = "Hyprland";
-    XDG_SESSION_DESKTOP = "Hyprland";
-    XDG_SESSION_TYPE = "wayland";
-    MOZ_ENABLE_WAYLAND = "1";
-    ELECTRON_OZONE_PLATFORM_HINT = "auto";
-    NIXOS_OZONE_WL = "1";
-  };
-
-  # Include profile-specific file configurations if they exist
-  home.file = selectedConfig.home.file or {};
+      # Add necessary environment variables
+      home.sessionVariables = {
+        CLUTTER_BACKEND = "wayland";
+        GDK_BACKEND = "wayland,x11";
+        QT_AUTO_SCREEN_SCALE_FACTOR = "1";
+        QT_QPA_PLATFORM = "wayland;xcb";
+        QT_QPA_PLATFORMTHEME = "qt6ct";
+        QT_SCALE_FACTOR = "1";
+        QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+        XDG_CURRENT_DESKTOP = "Hyprland";
+        XDG_SESSION_DESKTOP = "Hyprland";
+        XDG_SESSION_TYPE = "wayland";
+        MOZ_ENABLE_WAYLAND = "1";
+        ELECTRON_OZONE_PLATFORM_HINT = "auto";
+        NIXOS_OZONE_WL = "1";
+      };
+    }
+    (profileConfigs.${selectedProfile} or { })
+  ];
 }
